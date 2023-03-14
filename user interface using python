@@ -1,0 +1,46 @@
+import telebot
+import openai
+
+openai.api_key = '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'
+openai_model = 'text-davinci-002'  # Change this to the model you want to use
+
+bot_token = '6264125636:AAHY35q6dfu5jBkSX77R-XPBC1kBlRfN8_o'
+bot = telebot.TeleBot(bot_token)
+
+
+@bot.message_handler(commands=['start'])
+def start(message):
+  bot.reply_to(
+    message,
+    'Hello! I am a CHATGPT clone. You can ask me anything and I will do my best to give you a helpful response.'
+  )
+
+
+@bot.message_handler(commands=['help'])
+def help(message):
+  help_text = 'Here are the available commands:\n\n'
+  help_text += '/start - Start the bot\n'
+  help_text += '/ask - Ask a question and get a response\n'
+  help_text += '/help - Get a list of available commands\n'
+  help_text += '/support - Get help and support\n'
+  bot.reply_to(message, help_text)
+
+
+@bot.message_handler(commands=['support'])
+def support(message):
+  bot.reply_to(
+    message,
+    'If you need help or support, please contact us at support@example.com.')
+
+
+@bot.message_handler(func=lambda message: True)
+def handle_message(message):
+  user_input = message.text
+  response = openai.Completion.create(engine=openai_model,
+                                      prompt=user_input,
+                                      max_tokens=10000)
+  bot_response = response.choices[0].text.strip()
+  bot.reply_to(message, bot_response)
+
+
+bot.polling()
